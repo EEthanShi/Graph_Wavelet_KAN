@@ -24,10 +24,8 @@ print(device)
 class GraphKAN(nn.Module):
     def __init__(self, num_features, num_latent, num_classes, num_bases):
         super().__init__()
-        # self.fourierkan = NaiveFourierKANLayer(inputdim = num_latent, outdim = num_latent)
+       
         self.waveletkan = NaiveWaveletKANLayer(inputdim = num_latent, outdim = num_latent)
-        
-        # self.gcn = GCNConv(num_latent, num_classes)
 
         self.lin = nn.Linear(num_features, num_latent)
         self.num_features = num_features
@@ -38,7 +36,6 @@ class GraphKAN(nn.Module):
     def forward(self, X, edge_index):
         
         X_transform = self.waveletkan(self.lin(X.double()))
-        # X_gcn = self.gcn(X_transform, edge_index)
         X = torch.relu(X_transform)
         return F.log_softmax(X, dim=1)
 
@@ -151,8 +148,8 @@ if __name__ == "__main__":
         print(log.format(run + 1))
         
         
-        model = GraphKAN(num_features, 16, num_classes, num_bases)
-
+        model = GraphKAN(num_features, 16, num_classes, num_bases) 
+        # currently the feature output dimension is set as 16, regardless of nhid in args. KAN doesnt change dimension but provide a transformation
         model = model.to(device)
         data = data.to(device)
 
